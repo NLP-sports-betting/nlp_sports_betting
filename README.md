@@ -13,7 +13,7 @@ A natural language processing classification project designed to predict what pr
 
 # Initial Thoughts
  
-The initial hypothesis is that .
+The initial hypothesis is that python and R will be the most common languages and will correlate with words such as data, machine learning, and statistics.
  
 # The Plan
  
@@ -28,10 +28,10 @@ The initial hypothesis is that .
  
 * Explore data:
    * Answer the following initial questions:
-       1. What is the top language used?
-       2. ?
-       3. Does number of stars correlate with the language used?
-       4. ?
+       1. What are the most common words in Python/JavaScript sports betting repos?
+       2. Five most common words?
+       3. Does number of unique words vary between Python and JavaScript when it comes to sports betting repos?
+       4. Are there any words that uniquely identify a language used in sports betting repos?
        
 * Modeling:
     * 2 different NLP feature extraction: TF-IDF and TF
