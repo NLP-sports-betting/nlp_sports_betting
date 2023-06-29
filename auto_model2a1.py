@@ -289,7 +289,7 @@ def auto_random_trees_test(x_test, y_test, x_train, y_train, max_depth):
 '''----------------------------------------------- Auto Modeling No Graphs ---------------------------------------------------------------------------------'''
 
 #This function runs through a range of k values and returns the accuracy scores for each k value       
-def auto_knn_scores(X_train, y_train, X_validate, y_validate, k_range=range(5,20)): # k_range default should be set to 5
+def auto_knn_scores(X_train, y_train, X_validate, y_validate, k_range=range(5,21)): # k_range default should be set to 5
     scores_all = []
     
 
@@ -538,3 +538,72 @@ def random_forest_voting_classifier_test(X_train, y_train, X_test, y_test):
     plt.legend()
     plt.show()
 
+#function to plot delta of train and validate scores for KNN
+def knn_plot_delta(X_train, y_train, X_validate, y_validate):
+    metrics = []
+    train_score = []
+    validate_score = []
+    for k in range(5,21):
+        knn = KNeighborsClassifier(n_neighbors=k)
+        knn.fit(X_train, y_train)
+        train_score.append(knn.score(X_train, y_train))
+        validate_score.append(knn.score(X_validate, y_validate))
+        diff_score = train_score[-1] - validate_score[-1]
+        metrics.append({'k': k, 'train_score': train_score[-1], 'validate_score': validate_score[-1], 'diff_score': diff_score})
+    baseline_accuracy = y_train.value_counts().max() / y_train.value_counts().sum()
+    results = pd.DataFrame.from_records(metrics)
+    # modify the last few lines of the function
+    # drop the diff_score column before plotting
+    results_for_plotting = results.drop(columns=['diff_score'])
+    with sns.axes_style('whitegrid'):
+        ax = results_for_plotting.set_index('k').plot(figsize=(16,9))
+    plt.ylabel('Accuracy')
+    plt.axhline(baseline_accuracy, linewidth=2, color='black', label='baseline')
+    plt.xticks(np.arange(0,21,1))
+    min_diff_idx = np.abs(results['diff_score']).argmin()
+    min_diff_k = results.loc[min_diff_idx, 'k']
+    min_diff_score = results.loc[min_diff_idx, 'diff_score']
+    ax.axvline(min_diff_k, linestyle='--', linewidth=2, color='red', label=f'min diff at k={min_diff_k} (diff={min_diff_score:.3f})')
+    plt.fill_between(results['k'], train_score, validate_score, alpha=0.2, color='gray', where=(results['k'] > 0))
+    plt.title('K Nearest Neighbor', fontsize=18)
+    plt.legend()
+    plt.show()
+
+#function to test the best KNN model
+def auto_KNN_test(x_test, y_test, x_train, y_train, k):
+    #make it
+    knn = KNeighborsClassifier(n_neighbors=k) #increases max depth
+    #fit it
+    knn.fit(x_train, y_train)
+        #transform it
+        #train_acc = rf.score(x_train, y_train)
+    y_pred_train = knn.predict(x_train)
+        #conf = confusion_matrix(y_train, y_pred)
+        #transform it
+    test_acc = knn.score(x_test, y_test)
+        
+    y_pred = knn.predict(x_test)
+        #conf = confusion_matrix(y_test, y_pred)
+    
+    print(f"\n------------------------ Test Model with k of {k}------------------------------")
+        #plot_confusion_matrix(rf, x_test, y_test)
+        #plt.show()
+    print(pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)))
+    print("------------ Metrics ----------")
+        #print(print_cm_metrics(conf)) 
+
+    print(f"Accuracy is {test_acc}")
+
+    plt.figure(figsize=(16,8))
+
+    plt.hist(y_train, color='blue', alpha=.5, label="Actual Language")
+    plt.hist(y_pred_train, color='red', alpha=.5, label="Model: KNN")
+       #plt.hist(y_validate.G3_pred_lars, color='purple', alpha=.5, label="Model: Lasso Lars")
+        #plt.hist(y_validate.G3_pred_glm, color='yellow', alpha=.5, label="Model: TweedieRegressor")
+        #plt.hist(y_validate.G3_pred_lm2, color='green', alpha=.5, label="Model 2nd degree Polynomial")
+
+    plt.xlabel("Language")
+    plt.ylabel("Count")
+    plt.title("Comparing the Distribution of Languages to Distributions of Predicted Languages for the Top Model")
+    plt.legend()
+    plt.show()
