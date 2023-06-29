@@ -203,7 +203,7 @@ def explore(df,train):
 def make_ngrams(words, n):
     return pd.Series(nltk.ngrams(words, n)).value_counts().head(20)
 
-#plots the ngrams via wordcloud
+#plots the ngrams and single words via wordcloud
 def plot_bigrams(language,words):
     word_data = {k[0] + ' ' + k[1]: v for k, v in words.to_dict().items()}
     
@@ -231,6 +231,52 @@ def top_unique_words(unique_python_words, unique_java_script_words):
     java_script_unique = pd.DataFrame(java_script_unique, columns=['Java_script Words'])
 
     return print(f"{python_unique.head(10)} \n -------------------------------------------- \n{java_script_unique.head(10)}")
+
+
+
+def python_wordcloud(python_freq):
+    '''
+    this funtion will plot a wordcloud for top 40 python words
+    '''
+    blog_img = WordCloud(background_color='white').generate_from_frequencies(python_freq.head(40))
+    plt.figure(figsize=(8, 4))
+    plt.imshow(blog_img)
+    plt.axis('off')
+    plt.show()
+
+
+def java_script_wordcloud(java_script_freq):
+    '''
+    this function will plot a wordcloud for top 40 java script words
+    '''
+    blog_img = WordCloud(background_color='white').generate_from_frequencies(java_script_freq.head(40))
+    plt.figure(figsize=(8, 4))
+    plt.imshow(blog_img)
+    plt.axis('off')
+    plt.show()
+
+
+
+# Unique word count for python and java script
+
+def unique_words_for_language(python_words, java_script_words):
+    '''
+    This fucntion will find the number of unique words in python and java script repos
+    '''
+    
+    unique_python_words = list(set(python_words))
+    unique_java_script_words = list(set(java_script_words))
+    #compare the words in python_words and java_script_words and return unique words from each
+    python_unique = [word for word in unique_python_words if word not in unique_java_script_words]
+    java_script_unique = [word for word in unique_java_script_words if word not in unique_python_words]
+    
+    print(f'     Number of unique Python words: {len(python_unique)}')
+    print(f'Number of unique Java Script words: {len(java_script_unique)}')
+
+
+
+
+
 
 """---------------------------------------------------------------------functions to set the X, y sets ----------------------------------------------------------------------"""
 #sets the X and y variables for train, validate, and test
