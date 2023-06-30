@@ -22,6 +22,11 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+#imports of stat testing
+from scipy import stats
+from scipy.stats import chi2_contingency
+
+
 
 #ignore warnings
 import warnings
@@ -318,3 +323,15 @@ def X_y_variables_ngrams_tfidf(X_train, X_validate, X_test):
     X_test_bow = tfidf.transform(X_test)
 
     return X_bow, X_validate_bow, X_test_bow
+
+#a statistical test to see if there is a difference in the word frequency between python and java script
+def ttest_ind(python_freq, java_script_freq):
+    alpha = .05
+    t, p = stats.ttest_ind(python_freq, java_script_freq)
+    if (p < alpha):
+        print(f"{p} is less than {alpha}.\nWe reject the null hypothesis, there is a difference between the two groups.")
+    else:
+        print("We fail to reject the null hypothesis")
+    
+
+
